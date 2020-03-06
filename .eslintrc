@@ -1,0 +1,26 @@
+{
+    "extends": "airbnb-base",
+    "parser": "babel-eslint",
+    "globals": {
+        "document": true,
+        "window": true
+    },
+    "rules": {
+        "indent": ["error", 4],
+        "max-len": [
+            "warn",
+            {
+                "code": 120,
+                "ignoreComments": true,
+                "ignorePattern": "\\s*<",
+                "ignoreStrings": true
+            }
+        ],
+        "no-console": [
+            "error",
+            {
+                "allow": [ "error", "info", "warn" ]
+            }
+        ]
+    }
+}

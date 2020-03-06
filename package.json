@@ -1,0 +1,36 @@
+{
+    "name": "grimlock",
+    "version": "0.0.1",
+    "description": "Your Daily Autobot",
+    "main": "dist/index.js",
+    "author": "JSON",
+    "contributors": [
+        "Chester.js"
+    ],
+    "license": "MIT",
+    "repository": "github:itzjonas/grimlock.git",
+    "bugs": "https://github.com/itzjonas/grimlock/issues",
+    "homepage": "https://github.com/itzjonas/grimlock#readme",
+    "scripts": {
+        "build": "rm -rf /dist && babel src --out-dir dist/",
+        "dev": "NODE_ENV=development node src/index.js",
+        "start:desktop": "",
+        "start:edge": "",
+        "start:mobile": "",
+        "start": "NODE_ENV=production node dist/index.js",
+        "watch": "nodemon dist/index.js"
+    },
+    "dependencies": {
+        "puppeteer": "^2.1.1"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.8.4",
+        "@babel/core": "^7.8.7",
+        "@babel/preset-env": "^7.8.7",
+        "babel-eslint": "^10.1.0",
+        "eslint": "^6.8.0",
+        "eslint-config-airbnb-base": "^14.0.0",
+        "eslint-plugin-import": "^2.20.1",
+        "yarn": "^1.22.1"
+    }
+}
