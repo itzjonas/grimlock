@@ -8,6 +8,7 @@ async function main() {
         devtools: isDev,
     });
 
+    // eslint-disable-next-line no-unused-vars
     const [_, searchLinks] = await Promise.all([
         // Set the cookies necessary from logging in
         login(browser),
@@ -19,6 +20,7 @@ async function main() {
     const runnableSearches = searchLinks.map((textContent) => () => runSearch(browser, textContent));
 
     // Open searches in browser serially
+    // eslint-disable-next-line no-restricted-syntax
     for (const search of runnableSearches) {
         search();
     }

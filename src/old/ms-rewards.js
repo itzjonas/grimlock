@@ -1,5 +1,7 @@
-import puppeteer from 'puppeteer';
-import { credentials, randomInt } from './helpers';
+const puppeteer = require('puppeteer');
+const helpers = require('./helpers');
+
+const { credentials, randomInt } = helpers;
 
 export async function getSearchLinks(browser) {
     const page = await browser.newPage();
