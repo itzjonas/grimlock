@@ -7,13 +7,6 @@ const { error } = console;
 // const devices = require('puppeteer/DeviceDescriptors');
 // const iPhonex = devices['iPhone X'];
 
-// const executablePath = () => {
-//     // Chrome
-//     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-//     // Edge
-//     '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'
-// };
-
 const main = async () => {
     const {
         LIVE_USERNAME,
@@ -29,12 +22,14 @@ const main = async () => {
         process.exit(1);
     }
 
+    // Get Edge bonus and desktop searches
     const browser = await puppeteer.launch({
         devtools: true,
-        // executablePath: '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+        executablePath: '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
         headless: false,
     });
 
+    // Get mobile searches
     // await page.emulate(iPhonex);
     // Emulates an iPhone X
     // await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1');
