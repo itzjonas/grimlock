@@ -1,0 +1,1 @@
+!function(){const{log:o}=console;o("Parcel")}();

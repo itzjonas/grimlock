@@ -8,8 +8,8 @@
 // @match       https://account.microsoft.com/rewards*
 // @homepage    https://github.com/itzjonas/grimlock/#readme
 // @supportURL  https://github.com/itzjonas/grimlock/issues
-// @downloadURL https://raw.githubusercontent.com/itzjonas/grimlock/master/tampermonkey/grimlock.user.js
-// @updateURL   https://raw.githubusercontent.com/itzjonas/grimlock/master/tampermonkey/grimlock.meta.js
+// @downloadURL https://raw.githubusercontent.com/itzjonas/grimlock/master/grimlock.user.js
+// @updateURL   https://raw.githubusercontent.com/itzjonas/grimlock/master/grimlock.meta.js
 // @grant       GM_setValue
 // @grant       GM_getValue
 // @grant       GM_notification
