@@ -1,9 +1,8 @@
 // ==UserScript==
 // @name         Grimlock
-// @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  try to take over the world!
-// @author       You
+// @author       Chester.js
 // @match        https://www.bing.com*
 // @match        https://account.microsoft.com/rewards*
 // @run-at
