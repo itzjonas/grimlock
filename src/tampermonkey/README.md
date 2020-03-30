@@ -1,4 +1,4 @@
-# Grimlock
+# Grimlock (TM Script)
 
 This script requires [Microsoft Edge](https://www.microsoft.com/en-us/edge/) with the [Tampermonkey extension](https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd?hl=en-US) installed.
 
