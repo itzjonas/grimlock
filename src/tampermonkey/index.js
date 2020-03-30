@@ -1,3 +1,3 @@
-const { log } = console;
+// Testing my comment
 
-log('Parcel');
+GM_log('Parcel');

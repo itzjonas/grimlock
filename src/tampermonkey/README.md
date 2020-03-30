@@ -14,4 +14,8 @@ Once installed, ensure Tampermonkey is enabled and navigate to [https://www.bing
 
 - Create unified source code
 - Split code into components
-- Use parcel to combine src to grimlock.user.js
+- Use parcel to combine src to grimlock.user.js (with grimlock.meta.js)
+- Look into [adding](https://www.tampermonkey.net/documentation.php):
+  - @icon64 or @icon64URL
+  - GM_notification(text, title, image, onclick)
+  - GM_xmlhttpRequest

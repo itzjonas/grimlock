@@ -1,10 +1,18 @@
 // ==UserScript==
-// @name         Grimlock
-// @version      0.1.0
-// @description  try to take over the world!
-// @author       JSON
-// @match        https://www.bing.com/*
-// @grant        none
+// @name        Grimlock (JSON)
+// @version     0.1.1
+// @description Coming soon...
+// @author      JSON
+// @match       https://www.bing.com*
+// @match       https://www.bing.com/*
+// @match       https://account.microsoft.com/rewards/*
+// @grant       GM_deleteValue
+// @grant       GM_getValue
+// @grant       GM_log
+// @grant       GM_notification
+// @grant       GM_openInTab
+// @grant       GM_setValue
+// @grant       window.focus
 // ==/UserScript==
 
 const getRewardsTotal = () => {
@@ -51,12 +59,11 @@ const getSearchBreakdowns = () => {
                 max: Number(nums[1]),
             };
         }
-    }, 2000);
+    }, 3000);
 
     return breakdown;
 };
 
-// TODO: store in localhost?
 const getSearchLinks = () => {
     const allLinks = document.links;
     const links = [];
@@ -70,22 +77,62 @@ const getSearchLinks = () => {
     return links;
 };
 
+const search = () => {
+    const { sessionStorage } = window;
+    const storageKey = 'grimlockLinks';
+    const storedLinks = JSON.parse(sessionStorage.getItem(storageKey));
+
+    if (storedLinks) {
+        const newLink = storedLinks.pop();
+
+        setTimeout(() => {
+            GM_openInTab(newLink, true /* open in background */);
+            // window.href(newLink);
+        }, 1500);
+
+        if (storedLinks.length === 0) {
+            sessionStorage.removeItem(storageKey);
+        } else {
+            sessionStorage.setItem(storageKey, JSON.stringify(storedLinks));
+        }
+    } else {
+        sessionStorage.setItem(storageKey, JSON.stringify(getSearchLinks()));
+    }
+};
+
 window.addEventListener('load', () => {
-    const { log } = console;
     const signedIn = document.getElementById('id_s');
     const isSignedIn = signedIn && signedIn.style.display === 'none';
-    let breakdowns;
 
-    setTimeout(() => breakdowns = getSearchBreakdowns(), 3000);
+    if (isSignedIn) {
+        const searchCountKey = 'searchCount';
+        let searchCount = GM_getValue(searchCountKey);
+        GM_log(`Total Rewards: ${getRewardsTotal()}`);
 
-    // 1) Check that we can get more rewards
-    // 2) Check that there aren't pending links
-    // 3) Get new links
+        GM_log(`Search Count: ${searchCount}`); // undefined
+        if (searchCount > 0 && searchCount < 10) {
+            // Proceed
+            GM_setValue(searchCountKey, searchCount += 1);
+            search();
+        } else {
+            // Get breakdowns
+            let breakdown;
+            setTimeout(() => {
+                breakdown = JSON.stringify(getSearchBreakdowns(), null, 4);
+            }, 3000);
 
-    log(`Is user signed in? ${isSignedIn}`);
-    log(`Rewards Total: ${getRewardsTotal()}`);
+            GM_log(`Breakdown: ${breakdown}`); // undefined
 
-    setTimeout(() => {
-        log(`Breakdown: ${JSON.stringify(getSearchBreakdowns(), null, 4)}`);
-    }, 3000);
+            // See if we've maxed out and should stop searching
+            if (breakdown.desktop.current < breakdown.desktop.max) {
+                GM_setValue(searchCountKey, searchCount += 1);
+                search();
+            } else {
+                GM_log('Setting searchCountKey to 0!');
+                GM_setValue(searchCountKey, 0);
+            }
+        }
+    } else {
+        GM_log('You are NOT signed in, please sign in to automate.');
+    }
 });

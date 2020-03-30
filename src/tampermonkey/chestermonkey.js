@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Grimlock
-// @version      0.1
+// @name         Grimlock (chester)
+// @version      0.1.1
 // @description  try to take over the world!
 // @author       Chester.js
-// @match        https://www.bing.com*
+// @match        https://www.bing.com/*
 // @match        https://account.microsoft.com/rewards*
 // @run-at
 // @grant        none

@@ -3,6 +3,12 @@
     "parser": "babel-eslint",
     "globals": {
         "document": true,
+        "GM_deleteValue": true,
+        "GM_getValue": true,
+        "GM_log": true,
+        "GM_notification": true,
+        "GM_openInTab": true,
+        "GM_setValue": true,
         "window": true
     },
     "rules": {
@@ -20,6 +26,12 @@
             "error",
             {
                 "allow": [ "error", "info", "warn" ]
+            }
+        ],
+        "no-plusplus": [
+            "error",
+            {
+                "allowForLoopAfterthoughts": true
             }
         ]
     }
