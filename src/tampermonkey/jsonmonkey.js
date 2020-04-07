@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        Grimlock (JSON)
+// @name        Sludge (JSON)
 // @version     0.1.1
 // @description Coming soon...
 // @author      JSON
@@ -25,6 +25,7 @@ const getRewardsTotal = () => {
 
 const getSearchBreakdowns = async () => {
     // TODO: replace ridiculous iframe drilling to just a fetch to /rewardsapp/bepflyoutpage?style=modular&date=03/31/2020
+    // Look into MutationObserver https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     const breakdowns = await fetch(`/rewardsapp/bepflyoutpage?style=modular&date=${new Date().toLocaleDateString()}`)
         .then((response) => response.text())
         .then((text) => {

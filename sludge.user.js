@@ -39,4 +39,4 @@
     GM_log('Bot stopped');
   }, false);
 })();
-//# sourceMappingURL=grimlock.user.js.map
+//# sourceMappingURL=sludge.user.js.map

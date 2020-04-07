@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Grimlock (chester)
+// @name         Sludge (chester)
 // @version      0.1.1
 // @description  try to take over the world!
 // @author       Chester.js

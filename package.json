@@ -1,7 +1,7 @@
 {
     "name": "grimlock",
-    "version": "0.0.1",
-    "description": "Your Daily Autobot",
+    "version": "0.0.2",
+    "description": "Your Daily Autobots",
     "main": "dist/index.js",
     "author": "JSON",
     "contributors": [
@@ -11,7 +11,7 @@
     "repository": "github:itzjonas/grimlock.git",
     "bugs": "https://github.com/itzjonas/grimlock/issues",
     "homepage": "https://github.com/itzjonas/grimlock#readme",
-    "tampermonkey": "grimlock.user.js",
+    "tampermonkey": "sludge.user.js",
     "targets": {
         "tampermonkey": {
             "context": "browser",
@@ -19,17 +19,16 @@
         }
     },
     "scripts": {
-        "build": "rm -rf /dist && babel src --out-dir dist/",
-        "build:tm": "parcel build src/tampermonkey/index.js --target tampermonkey --no-source-maps --no-minify",
+        "autobots:rollout": "NODE_ENV=production node dist/index.js",
+        "assemble": "rm -rf /dist && babel src --out-dir dist/",
+        "assemble:sludge": "parcel build src/tampermonkey/index.js --target tampermonkey --no-source-maps --no-minify",
         "dev": "NODE_ENV=development node src/index.js",
         "start:desktop": "",
         "start:edge": "",
         "start:mobile": "",
-        "start": "NODE_ENV=production node dist/index.js",
         "watch": "nodemon src/index.js"
     },
     "dependencies": {
-        "dotenv": "^8.2.0",
         "puppeteer": "^2.1.1"
     },
     "devDependencies": {
@@ -41,7 +40,7 @@
         "eslint-config-airbnb-base": "^14.1.0",
         "eslint-plugin-import": "^2.20.1",
         "nodemon": "^2.0.2",
-        "parcel": "^2.0.0-alpha.3.2",
+        "parcel": "^1.12.4",
         "yarn": "^1.22.4"
     }
 }

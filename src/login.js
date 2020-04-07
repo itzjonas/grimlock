@@ -1,7 +1,3 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 const login = async (browser) => {
     const {
         LIVE_USERNAME,

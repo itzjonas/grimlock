@@ -1,6 +1,27 @@
+# Logs
+*.log
+logs
+npm-debug.log*
+package-lock.json
+.yarn-error.log
+.yarn-Integrity
+
+# Caches
+.cache
 .DS_Store
+.eslintcache
+.npm
+.parcel-cache
+
+# IDEs
+*~
+.idea
+.vscode
+
+# Folders
+build
+dist
 node_modules
-/dist
+
+# Files
 .env
-yarn-error.log
-.parcel-cache/
