@@ -14,8 +14,10 @@ const main = async () => {
     } = process.env;
 
     if (
-        LIVE_USERNAME !== ''
-        && LIVE_PASSWORD !== ''
+        !LIVE_USERNAME
+        || !LIVE_PASSWORD
+        || LIVE_USERNAME === ''
+        || LIVE_PASSWORD === ''
     ) {
         error('Please setup your \x1b[93m.env\x1b[m file per the README.md!');
 

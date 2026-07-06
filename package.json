@@ -20,27 +20,32 @@
     },
     "scripts": {
         "autobots:rollout": "NODE_ENV=production node dist/index.js",
-        "assemble": "rm -rf /dist && babel src --out-dir dist/",
-        "assemble:sludge": "parcel build src/tampermonkey/index.js --target tampermonkey --no-source-maps --no-minify",
-        "dev": "NODE_ENV=development node src/index.js",
+        "assemble": "rm -rf dist && babel src --out-dir dist/",
+        "assemble:sludge": "parcel build src/tampermonkey/index.js --target tampermonkey --no-source-maps --no-optimize",
+        "dev": "NODE_ENV=development babel-node src/index.js",
         "start:desktop": "",
         "start:edge": "",
         "start:mobile": "",
-        "watch": "nodemon src/index.js"
+        "watch": "nodemon --exec babel-node src/index.js"
     },
     "dependencies": {
-        "puppeteer": "^8.0.0"
+        "puppeteer": "^25.3.0"
+    },
+    "resolutions": {
+        "cross-spawn": "^7.0.5",
+        "braces": "^3.0.3",
+        "ajv": "^6.14.0"
     },
     "devDependencies": {
-        "@babel/cli": "^7.13.14",
-        "@babel/core": "^7.29.6",
-        "@babel/preset-env": "^7.13.12",
-        "babel-eslint": "^10.1.0",
-        "eslint": "^7.23.0",
-        "eslint-config-airbnb-base": "^14.2.1",
-        "eslint-plugin-import": "^2.22.1",
-        "nodemon": "^2.0.7",
-        "parcel": "^1.12.4",
-        "yarn": "^1.22.10"
+        "@babel/cli": "^7.26.0",
+        "@babel/core": "^7.26.0",
+        "@babel/eslint-parser": "^7.26.0",
+        "@babel/node": "^7.26.0",
+        "@babel/preset-env": "^7.26.0",
+        "eslint": "^8.57.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.31.0",
+        "nodemon": "^3.1.0",
+        "parcel": "^2.16.0"
     }
 }
