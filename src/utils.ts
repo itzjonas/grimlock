@@ -1,4 +1,8 @@
 import { Page, BrowserContext } from 'playwright';
+import { ChildProcess, spawn } from 'child_process';
+import * as http from 'http';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const colors = {
   reset: '\x1b[0m',
@@ -79,5 +83,138 @@ export const checkLoginState = async (page: Page): Promise<boolean> => {
 };
 
 export const createStealthPage = async (context: BrowserContext): Promise<Page> => {
-  return await context.newPage();
+  // Reuse the existing tab if one is open to prevent forcing Playwright's default viewport emulation
+  const pages = context.pages();
+  const page = pages.length > 0 ? pages[0] : await context.newPage();
+  
+  // Inject script to hide automation indicator
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', {
+      get: () => undefined,
+    });
+  });
+
+  return page;
+};
+
+/**
+ * Checks if the CDP debugging port is active and responding.
+ */
+export const checkCdpReady = (port: number): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const req = http.get(`http://127.0.0.1:${port}/json/version`, (res) => {
+      resolve(res.statusCode === 200);
+    });
+    req.on('error', () => {
+      resolve(false);
+    });
+    req.end();
+  });
+};
+
+/**
+ * Ensures a directory exists by creating it recursively.
+ */
+export const ensureDirExists = (dirPath: string): string => {
+  const resolved = path.resolve(dirPath);
+  if (!fs.existsSync(resolved)) {
+    fs.mkdirSync(resolved, { recursive: true });
+  }
+  return resolved;
+};
+
+/**
+ * Programmatically launches the browser with debugging enabled and optional proxy.
+ */
+export const launchBrowser = async (
+  executablePath: string,
+  userDataDir: string,
+  port = 9222,
+  proxy?: string
+): Promise<ChildProcess> => {
+  const resolvedUserDataDir = ensureDirExists(userDataDir);
+
+  let actualPath = executablePath;
+  if (!fs.existsSync(actualPath)) {
+    logger.warn(`Configured browser path not found: "${executablePath}"`);
+    
+    // Auto-detection fallbacks on macOS
+    const candidates = [
+      '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser',
+    ];
+    
+    let found = false;
+    for (const cand of candidates) {
+      if (fs.existsSync(cand)) {
+        logger.info(`Auto-detected fallback browser at: "${cand}"`);
+        actualPath = cand;
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      throw new Error(`Could not find a valid browser executable. Please install Google Chrome or Microsoft Edge, or configure the correct path in profiles.json.`);
+    }
+  }
+
+  const args = [
+    `--remote-debugging-port=${port}`,
+    `--user-data-dir=${resolvedUserDataDir}`,
+    '--no-first-run',
+    '--no-default-browser-check',
+  ];
+
+  if (proxy && proxy.trim().length > 0) {
+    args.push(`--proxy-server=${proxy.trim()}`);
+  }
+
+  logger.info(`Spawning browser process: "${actualPath}"`);
+  logger.info(`Arguments: ${args.join(' ')}`);
+
+  const proc = spawn(actualPath, args, {
+    stdio: 'ignore',
+    detached: true,
+  });
+
+  // Attach error handler to prevent unhandled exceptions on failed launches
+  proc.on('error', (err) => {
+    logger.error(`Browser process failed to start or was terminated: ${err.message}`);
+  });
+
+  proc.unref();
+
+  // Wait up to 15 seconds for the port to open
+  logger.info('Waiting for remote debugging port to become active...');
+  for (let i = 0; i < 30; i++) {
+    await sleep(500);
+    const ready = await checkCdpReady(port);
+    if (ready) {
+      logger.success('CDP remote debugging port is ready.');
+      return proc;
+    }
+  }
+
+  throw new Error(`Failed to connect to browser CDP on port ${port} after 15 seconds.`);
+};
+
+
+/**
+ * Gracefully terminates the spawned browser process.
+ */
+export const killBrowser = async (proc: ChildProcess): Promise<void> => {
+  logger.info('Terminating browser process...');
+  if (!proc || proc.pid === undefined) {
+    return;
+  }
+
+  try {
+    proc.kill('SIGKILL');
+  } catch (err: any) {
+    logger.warn(`Failed to kill browser process: ${err.message}`);
+  }
+
+  await sleep(1000);
 };

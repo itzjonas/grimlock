@@ -1,9 +1,12 @@
 import { chromium, Browser } from 'playwright';
 import * as readline from 'readline';
+import * as fs from 'fs';
+import * as path from 'path';
 
-import { logger, sleep, checkLoginState, createStealthPage } from './utils';
+import { logger, sleep, checkLoginState, createStealthPage, launchBrowser, killBrowser } from './utils';
 import { performDesktopSearches, performMobileSearches } from './searches';
 import { completeRewardsDashboard } from './rewards';
+import { runSemiAutomatedSignup } from './signup';
 
 /**
  * Displays an interactive terminal menu with selection using arrow keys.
@@ -143,20 +146,109 @@ async function ensureLoggedIn(browser: Browser): Promise<boolean> {
 async function main() {
   logger.header('Grimlock - Undetectable Rewards Automator');
 
+  // Load config
+  const configPath = path.resolve('./profiles.json');
+  let config: any = { browserPath: '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', profiles: [] };
+  if (fs.existsSync(configPath)) {
+    try {
+      config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } catch (_) {}
+  }
+
   // 1. Menu selection
   const choice = await promptMenu('Select task to execute:', [
-    'Run All Tasks (Dashboard + Desktop Searches + Mobile Searches)',
-    'Complete Dashboard Activities',
-    'Perform Desktop Searches',
-    'Perform Mobile Searches',
+    'Run Multi-Account Rotator Workflow',
+    'Run All Tasks (Dashboard + Desktop Searches + Mobile Searches) [Single Profile]',
+    'Complete Dashboard Activities [Single Profile]',
+    'Perform Desktop Searches [Single Profile]',
+    'Perform Mobile Searches [Single Profile]',
+    'Create New Microsoft Account (Semi-Automated)',
     'Exit'
   ], 0, 30000); // 30s timeout
 
-  if (choice === 4) {
+  if (choice === 6) {
     logger.info('Exiting Grimlock.');
     process.exit(0);
   }
 
+  // Handle Semi-Automated Account Signup
+  if (choice === 5) {
+    await runSemiAutomatedSignup(config.browserPath);
+    process.exit(0);
+  }
+
+  // Handle Multi-Account Rotator
+  if (choice === 0) {
+    const activeProfiles = (config.profiles || []).filter((p: any) => p.active);
+    if (activeProfiles.length === 0) {
+      logger.error('No active profiles found in profiles.json. Please run the Signup Assistant first or configure profiles.');
+      process.exit(1);
+    }
+
+    logger.info(`Starting Multi-Account Rotator for ${activeProfiles.length} active profiles...`);
+    const results: { name: string; status: string; info: string }[] = [];
+
+    for (const profile of activeProfiles) {
+      logger.divider();
+      logger.step(`Processing Account: ${profile.name}`);
+      let browserProc: any;
+      let browser: Browser | undefined;
+
+      try {
+        // Launch browser programmatically
+        browserProc = await launchBrowser(config.browserPath, profile.userDataDir, 9222, profile.proxy);
+        
+        // Connect via CDP
+        browser = await chromium.connectOverCDP('http://localhost:9222');
+        logger.success('Connected to browser debugging port.');
+
+        // Ensure logged in
+        const success = await ensureLoggedIn(browser);
+        if (!success) {
+          throw new Error('Verification failed / Login required');
+        }
+
+        // Run all tasks
+        await completeRewardsDashboard(browser);
+        await sleep(5000);
+        await performDesktopSearches(browser, profile.desktopSearches ?? 35);
+        await sleep(5000);
+        await performMobileSearches(browser, profile.mobileSearches ?? 25);
+
+        results.push({ name: profile.name, status: 'Completed', info: 'Success' });
+      } catch (err: any) {
+        logger.error(`Failed during run for ${profile.name}: ${err.message}`);
+        results.push({ name: profile.name, status: 'Failed', info: err.message });
+      } finally {
+        if (browser) {
+          logger.info('Closing connection to browser...');
+          await browser.close().catch(() => {});
+        }
+        if (browserProc) {
+          await killBrowser(browserProc).catch(() => {});
+        }
+        await sleep(3000); // Cool-down delay before next profile
+      }
+    }
+
+    // Print final summary
+    logger.header('Multi-Account Run Summary');
+    console.log('┌' + '─'.repeat(25) + '┬' + '─'.repeat(15) + '┬' + '─'.repeat(30) + '┐');
+    console.log(`│ ${'Profile Name'.padEnd(23)} │ ${'Status'.padEnd(13)} │ ${'Details'.padEnd(28)} │`);
+    console.log('├' + '─'.repeat(25) + '┼' + '─'.repeat(15) + '┼' + '─'.repeat(30) + '┤');
+    for (const r of results) {
+      const statusColor = r.status === 'Completed' ? '\x1b[32m' : '\x1b[31m';
+      const cleanStatus = `${statusColor}${r.status}\x1b[0m`;
+      const paddedStatus = cleanStatus + ' '.repeat(13 - r.status.length);
+      console.log(`│ ${r.name.padEnd(23)} │ ${paddedStatus} │ ${r.info.substring(0, 28).padEnd(28)} │`);
+    }
+    console.log('└' + '─'.repeat(25) + '┴' + '─'.repeat(15) + '┴' + '─'.repeat(30) + '┘');
+
+    logger.success('Grimlock finished rotating all active accounts.');
+    process.exit(0);
+  }
+
+  // Handle single-profile runs (using existing manual CDP)
   const cdpEndpoint = process.env.CDP_ENDPOINT || 'http://localhost:9222';
   logger.info(`Connecting to running browser instance via CDP at ${cdpEndpoint}...`);
 
@@ -179,18 +271,18 @@ async function main() {
         process.exit(1);
       }
 
-      if (choice === 0) {
-        // Run All
+      if (choice === 1) {
+        // Run All (Single)
         await completeRewardsDashboard(browser);
         await sleep(5000);
         await performDesktopSearches(browser);
         await sleep(5000);
         await performMobileSearches(browser);
-      } else if (choice === 1) {
-        await completeRewardsDashboard(browser);
       } else if (choice === 2) {
-        await performDesktopSearches(browser);
+        await completeRewardsDashboard(browser);
       } else if (choice === 3) {
+        await performDesktopSearches(browser);
+      } else if (choice === 4) {
         await performMobileSearches(browser);
       }
     }
