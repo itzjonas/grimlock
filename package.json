@@ -1,6 +1,6 @@
 {
     "name": "grimlock",
-    "version": "0.0.3",
+    "version": "0.5.0",
     "description": "Your Daily Autobots",
     "main": "dist/index.js",
     "author": "JSON",
@@ -11,41 +11,19 @@
     "repository": "github:itzjonas/grimlock.git",
     "bugs": "https://github.com/itzjonas/grimlock/issues",
     "homepage": "https://github.com/itzjonas/grimlock#readme",
-    "tampermonkey": "sludge.user.js",
-    "targets": {
-        "tampermonkey": {
-            "context": "browser",
-            "sourceMap": false
-        }
-    },
     "scripts": {
-        "autobots:rollout": "NODE_ENV=production node dist/index.js",
-        "assemble": "rm -rf dist && babel src --out-dir dist/",
-        "assemble:sludge": "parcel build src/tampermonkey/index.js --target tampermonkey --no-source-maps --no-optimize",
-        "dev": "NODE_ENV=development babel-node src/index.js",
-        "start:desktop": "",
-        "start:edge": "",
-        "start:mobile": "",
-        "watch": "nodemon --exec babel-node src/index.js"
+        "build": "tsc",
+        "start": "node dist/index.js"
     },
     "dependencies": {
-        "puppeteer": "^25.3.0"
-    },
-    "resolutions": {
-        "cross-spawn": "^7.0.5",
-        "braces": "^3.0.3",
-        "ajv": "^6.14.0"
+        "ghost-cursor-playwright": "*",
+        "playwright": "*"
     },
     "devDependencies": {
-        "@babel/cli": "^7.26.0",
-        "@babel/core": "^7.26.0",
-        "@babel/eslint-parser": "^7.26.0",
-        "@babel/node": "^7.26.0",
-        "@babel/preset-env": "^7.26.0",
+        "@types/node": "^20.11.24",
         "eslint": "^8.57.0",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-plugin-import": "^2.31.0",
-        "nodemon": "^3.1.0",
-        "parcel": "^2.16.0"
+        "typescript": "^5.3.3"
     }
 }

@@ -4,48 +4,65 @@
 
 # Grimlock
 
-Autobots (Sludge & Grimlock) used to reap great rewards!
+An automated, highly undetectable Rewards bot built with **Playwright** and **TypeScript**. 
 
-**NOTE:**
+Grimlock attaches directly to an active browser instance using the Chrome DevTools Protocol (CDP) to run human-like daily navigation workflows, scroll verification tasks, and form-query completions. By utilizing natural cursor trails and variable typing speeds, it simulates organic user behaviors completely undetected.
 
-There are currently two Autobots:
-1) Partial automation via Sludge (Tampermonkey) (active development)
-2) Full automation via Grimlock (Puppeteer)
+---
 
-## Sludge (Tampermonkey)
+## Features
 
-The trusty yet dimwitted sidekick to Grimlock is surveying the current landscape. After enough intel has been gathered, it will be relayed to Grimlock for full deployment.
+- **CDP Session Attachment**: Attaches to active browser cookies and existing sessions, avoiding the need for automated logins or credentials storage.
+- **Human-like Interactions**: Simulates organic pointer paths using `ghost-cursor-playwright` and typing delay cadences.
+- **Interactive Dashboard Solver**: Automatically executes card interactions, selects form options, and handles inline page navigation steps.
+- **Jittered Search Workflows**: Performs desktop and mobile search queries with scroll checking and link clicks to emulate organic browsing.
+- **CLI Workflow Selector**: Select which automation profile to run directly from the command line.
 
-To activate Sludge [click here](./src/tampermonkey/README.md).
+---
 
-## Grimlock (Puppeteer)
+## Setup & Execution
 
-This will support full automation for up to five (5) accounts.
+### 1. Launch Browser with Remote Debugging
 
-### Prerequisite
+Grimlock connects to a running browser instance with remote debugging enabled:
 
-Grimlock works best when he's on the [Edge](https://www.microsoft.com/en-us/edge/). Make sure he gets there...
-
-### Setup
-
-**Take the Autobot Vow** (store your credentials locally)
-
-```sh
-export LIVE_USERNAME='youremail@hotmail.com'
-export LIVE_PASSWORD='yourpassword'
+**macOS (Edge)**:
+```bash
+/Applications/Microsoft\ Edge.app/Contents/MacOS/Microsoft\ Edge --remote-debugging-port=9222 --user-data-dir="$HOME/Library/Application Support/Microsoft Edge/Default"
 ```
 
-**Assemble All Autobots** (install dependencies)
-```sh
-yarn
-```
-Then:
-```sh
-yarn assemble
+**macOS (Chrome)**:
+```bash
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="$HOME/Library/Application Support/Google/Chrome/Default"
 ```
 
-### Activate Grimlock
+*Ensure the browser is logged in to your default account profiles before starting.*
 
+### 2. Install Dependencies & Build
 ```sh
-yarn autobots:rollout
+yarn install
+yarn build
 ```
+
+### 3. Run Grimlock
+```sh
+yarn start
+```
+Select a task from the CLI menu, or wait 30 seconds for the menu to auto-select **Run All**.
+
+---
+
+## Proposed Future Features (Roadmap)
+
+The following improvements are planned for future releases:
+
+1. **Multi-Account Profile Support**:
+   - Spawning browser processes sequentially with separate profile directory arguments (`--profile-directory="Profile 1"`, `--profile-directory="Profile 2"`) to run the automated routines across up to five user profiles sequentially.
+2. **AI-Generated Searches (Gemini Integration)**:
+   - Integrating `@google/genai` to generate dynamic, context-aware search queries based on daily news feeds rather than relying on a hardcoded keyword library.
+3. **CLI Progress Tracking Table**:
+   - Querying navigation progress metrics in the browser context and rendering a clean CLI status board (e.g. `Queries: 35/35`, `Dashboard Tasks: 5/5`, `Total Status: Complete`).
+4. **Automated Background Scheduling**:
+   - Bundling OS-specific runners (e.g. macOS LaunchAgents / Windows Task Scheduler) to automatically spin up a debugger and execute Grimlock daily at a set time.
+5. **Notification Alerts**:
+   - Supporting Discord/Telegram webhooks to notify the user if manual interaction is required during a run.
